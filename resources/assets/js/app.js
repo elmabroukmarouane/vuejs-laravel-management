@@ -1,22 +1,59 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
 window.Vue = require('vue');
+window.Event = new Vue();
+require('./includes');
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('layout-app', require('./components/Layouts/LayoutApp.vue'));
+import { router } from './routes.js';
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    router,
+    data(){
+        return {
+            table: '',
+        }
+    },
+    created(){
+        Event.$on('init-datatable', (tableid) => {
+            this.datatableThis(tableid);
+        });
+        Event.$on('destroy-datatable', () => {
+            this.destroyThis();
+        });
+        Event.$on('sweet-alert-message', (message) => {
+            this.sweetAlertMessage(message);
+        });
+        this.initComponents();
+    },
+    methods:{
+        datatableThis(tableid){
+            this.table = $('#' + tableid).DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                },
+                "order": [[ 0, "asc" ]]
+            });
+        },
+        destroyThis(){
+            this.table.destroy();
+        },
+        initComponents()
+        {
+            $(".dropdown-content.select-dropdown li").on( "click", function() {
+                var that = this;
+                setTimeout(function(){
+                    if($(that).parent().hasClass('active')){
+                        $(that).parent().removeClass('active');
+                        $(that).parent().hide();
+                    }
+                },100);
+            });
+        },
+        sweetAlertMessage(message)
+        {
+            swal('Mise à jour', message, "success");
+        }
+    }
 });

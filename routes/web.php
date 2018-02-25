@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+// People Management
+Route::resource('people', 'PeopleController');
